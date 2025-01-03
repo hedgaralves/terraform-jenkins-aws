@@ -16,6 +16,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/hedgaralves/terraform-jenkins-aws.git'
+                credentialsId: 'terraform-jenkins'
             }
         }
 
@@ -38,7 +39,7 @@ pipeline {
                 sh 'terraform show -no-color tfplan > tfplan.txt'
             }
         }
-        
+
         stage('Apply / Destroy') {
             steps {
                 script {
