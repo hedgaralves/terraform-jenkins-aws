@@ -21,14 +21,14 @@ pipeline {
 
         stage('Terraform Validate') {
             steps {
-                sh 'terraform validate -no-color'
+                bat 'terraform validate -no-color'
             }
         }
 
         stage('Terraform Lint') {
             steps {
-                sh 'tflint --init'
-                sh 'tflint'
+                bat 'tflint --init'
+                bat 'tflint'
             }
         }
 
@@ -36,7 +36,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh 'terraform init -input=false -no-color'
+                        bat 'terraform init -input=false -no-color'
                     } catch (Exception e) {
                         echo "Terraform init failed: ${e}"
                         throw e
@@ -47,8 +47,8 @@ pipeline {
 
         stage('Plan') {
             steps {
-                sh 'terraform plan -out tfplan'
-                sh 'terraform show -no-color tfplan > tfplan.txt'
+                bat 'terraform plan -out tfplan'
+                bat 'terraform show -no-color tfplan > tfplan.txt'
             }
         }
 
@@ -62,9 +62,9 @@ pipeline {
                             parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
                         }
 
-                        sh 'terraform apply -input=false tfplan'
+                        bat 'terraform apply -input=false tfplan'
                     } else if (params.action == 'destroy') {
-                        sh 'terraform destroy --auto-approve'
+                        bat 'terraform destroy --auto-approve'
                     } else {
                         error "Invalid action selected. Please choose either 'apply' or 'destroy'."
                     }
