@@ -15,19 +15,31 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/hedgaralves/terraform-jenkins-aws.git'
-                credentialsId: 'terraform-jenkins'
+                git branch: 'main', url: 'https://github.com/hedgaralves/terraform-jenkins-aws.git', credentialsId: 'terraform-jenkins'
             }
         }
 
-    stage('Terraform init') {
-        steps {
-            script {
-                try {
-                    sh 'terraform init -input=false -no-color'
-                } catch (Exception e) {
-                    echo "Terraform init failed: ${e}"
-                    throw e
+        stage('Terraform Validate') {
+            steps {
+                sh 'terraform validate -no-color'
+            }
+        }
+
+        stage('Terraform Lint') {
+            steps {
+                sh 'tflint --init'
+                sh 'tflint'
+            }
+        }
+
+        stage('Terraform init') {
+            steps {
+                script {
+                    try {
+                        sh 'terraform init -input=false -no-color'
+                    } catch (Exception e) {
+                        echo "Terraform init failed: ${e}"
+                        throw e
                     }
                 }
             }
@@ -50,15 +62,26 @@ pipeline {
                             parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
                         }
 
-                        sh 'terraform ${action} -input=false tfplan'
+                        sh 'terraform apply -input=false tfplan'
                     } else if (params.action == 'destroy') {
-                        sh 'terraform ${action} --auto-approve'
+                        sh 'terraform destroy --auto-approve'
                     } else {
                         error "Invalid action selected. Please choose either 'apply' or 'destroy'."
                     }
                 }
             }
         }
+    }
 
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
     }
 }
