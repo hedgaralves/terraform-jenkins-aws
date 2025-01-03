@@ -18,17 +18,27 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/hedgaralves/terraform-jenkins-aws.git'
             }
         }
-        stage('Terraform init') {
-            steps {
-                sh 'terraform init'
+
+    stage('Terraform init') {
+        steps {
+            script {
+                try {
+                    sh 'terraform init -input=false -no-color'
+                } catch (Exception e) {
+                    echo "Terraform init failed: ${e}"
+                    throw e
+                    }
+                }
             }
         }
+
         stage('Plan') {
             steps {
                 sh 'terraform plan -out tfplan'
                 sh 'terraform show -no-color tfplan > tfplan.txt'
             }
         }
+        
         stage('Apply / Destroy') {
             steps {
                 script {
