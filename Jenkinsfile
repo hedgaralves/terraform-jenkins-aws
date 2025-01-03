@@ -19,19 +19,6 @@ pipeline {
             }
         }
 
-        stage('Terraform Validate') {
-            steps {
-                bat 'terraform validate -no-color'
-            }
-        }
-
-        stage('Terraform Lint') {
-            steps {
-                bat 'tflint --init'
-                bat 'tflint'
-            }
-        }
-
         stage('Terraform init') {
             steps {
                 script {
@@ -42,6 +29,19 @@ pipeline {
                         throw e
                     }
                 }
+            }
+        }
+
+        stage('Terraform Validate') {
+            steps {
+                bat 'terraform validate -no-color'
+            }
+        }
+
+        stage('Terraform Lint') {
+            steps {
+                bat 'tflint --init'
+                bat 'tflint'
             }
         }
 
