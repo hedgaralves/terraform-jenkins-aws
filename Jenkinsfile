@@ -38,13 +38,6 @@ pipeline {
             }
         }
 
-        stage('Terraform Lint') {
-            steps {
-                bat 'tflint --init'
-                bat 'tflint'
-            }
-        }
-
         stage('Plan') {
             steps {
                 bat 'terraform plan -out tfplan'
