@@ -1,4 +1,4 @@
-# Terraform Jenkins Project
+# Terraform Jenkins Aws Project
 
 Este projeto utiliza Terraform para provisionar e gerenciar a infraestrutura numa Cloud através do processo de CI/CD do Jenkins.
 
