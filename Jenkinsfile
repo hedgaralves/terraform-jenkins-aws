@@ -38,6 +38,15 @@ pipeline {
             }
         }
 
+        stage('Terraform Fmt') {
+            steps {
+                script {
+                    bat 'terraform fmt -no-color'
+                    bat 'terraform fmt -check -no-color'
+                }
+            }
+        }
+
         stage('Plan') {
             steps {
                 bat 'terraform plan -out tfplan'
